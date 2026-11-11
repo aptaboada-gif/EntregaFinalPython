@@ -1,0 +1,168 @@
+#importa json para poder guardar y cargar los productos en un archivo JSON
+import json
+
+print("Bienvenidos al sistema de gestión de productos")
+
+#genera el archivo JSON si no existe y lo inicializa con una lista vacía
+ARCHIVO = "productos.json"
+
+
+# ---------------- FUNCIONES ----------------
+# definimos funciones para cargar, guardar, agregar, buscar, listar y eliminar productos
+
+def cargar_productos():
+    """Carga los productos guardados en el archivo."""
+    try:
+        with open(ARCHIVO, "r", encoding="utf-8") as archivo:
+            return json.load(archivo)
+    except FileNotFoundError:
+        return []
+
+
+def guardar_productos():
+    """Guarda la lista de productos en el archivo."""
+    with open(ARCHIVO, "w", encoding="utf-8") as archivo:
+        json.dump(listado_productos, archivo, ensure_ascii=False, indent=4)
+
+
+def agregar_producto():
+    nombre = input("Ingrese nombre del producto: ")
+
+    if nombre == "":
+        print("No se ingresó ningún producto.\n")
+        return
+
+    categoria = input("Ingrese categoría del producto: ")
+
+    precio = input("Ingrese precio del producto, sin centavos: ")
+
+    if precio.isdigit():
+        precio = int(precio)
+
+        producto = [nombre, categoria, precio]
+
+        listado_productos.append(producto)
+
+        guardar_productos()
+
+        print("Producto agregado con éxito.\n")
+
+    else:
+        print("El precio debe ser un número entero, sin centavos.\n")
+
+
+def buscar_producto():
+    producto_buscado = input("Ingrese nombre del producto a buscar: ")
+
+    encontrado = False
+
+    for producto in listado_productos:
+
+        if producto[0].lower() == producto_buscado.lower():
+            print("\n¡Producto encontrado!")
+            print(f"Nombre: {producto[0]}")
+            print(f"Categoría: {producto[1]}")
+            print(f"Precio: $ {producto[2]}\n")
+
+            encontrado = True
+            break
+
+    if not encontrado:
+        print("Producto no encontrado.\n")
+
+
+def listar_productos():
+
+    if len(listado_productos) == 0:
+        print("El listado está vacío.\n")
+
+    else:
+        print("\nListado completo de productos:")
+
+        for indice, producto in enumerate(listado_productos, start=1):
+
+            print(f"{indice}. {producto[0]} | "
+                  f"Categoría: {producto[1]} | "
+                  f"Precio: $ {producto[2]}")
+
+        print()
+
+
+def eliminar_producto():
+
+    if len(listado_productos) == 0:
+        print("El listado está vacío, no hay nada que eliminar.\n")
+
+    else:
+
+        print("\nListado actual:")
+
+        for indice, producto in enumerate(listado_productos, start=1):
+            print(f"{indice}. {producto[0]} | "
+                  f"Categoría: {producto[1]} | "
+                  f"Precio: $ {producto[2]}")
+
+        numero_elegido = input(
+            "Ingrese el número del producto que desea eliminar: "
+        )
+
+        if numero_elegido.isdigit():
+
+            indice_usuario = int(numero_elegido)
+
+            if 1 <= indice_usuario <= len(listado_productos):
+
+                indice_real = indice_usuario - 1
+
+                producto_eliminado = listado_productos.pop(indice_real)
+
+                guardar_productos()
+
+                print(
+                    f"El producto '{producto_eliminado[0]}' "
+                    f"fue eliminado con éxito.\n"
+                )
+
+            else:
+                print("Número fuera de rango.\n")
+
+        else:
+            print("Por favor, ingrese un número válido.\n")
+
+
+# ---------------- PROGRAMA PRINCIPAL ----------------
+
+# Cargamos los productos que ya estaban guardados
+listado_productos = cargar_productos()
+
+
+while True:
+    print("\n--- Sistema de Gestión de Productos ---\n")
+
+    print("Menú de opciones:")
+    print("1 - Agregar producto")
+    print("2 - Buscar producto")
+    print("3 - Listar productos")
+    print("4 - Eliminar producto")
+    print("5 - Salir\n")
+
+    opcion = input("Ingrese la opción deseada: ")
+
+    if opcion == "1":
+        agregar_producto()
+
+    elif opcion == "2":
+        buscar_producto()
+
+    elif opcion == "3":
+        listar_productos()
+
+    elif opcion == "4":
+        eliminar_producto()
+
+    elif opcion == "5":
+        print("Saliendo del sistema. ¡Hasta luego!")
+        break
+
+    else:
+        print("Elija una opción válida del 1 al 5.\n")
